@@ -174,7 +174,7 @@ def generate_cold_ice_mask(
             shapes.append(ice_margin.buffer(distance_space[index])[0])
             polygon_values.append(value_space[index])
 
-    if shapes:
+    if shapes and (not np.all([s.is_empty for s in shapes])):
         mask_raster = poly_to_grid(
             shapes, grid_x, grid_y, polygon_values=polygon_values
         )
@@ -766,6 +766,7 @@ def make_shear_stress_map(grid_x, grid_y, grid_crs, parameters, save=None):
         if "cold_ice" in p_processes:
             p_cold_ice_shear_stress = parameters["p_cold_ice_shear_stress"]
             p_cold_ice_interior_dist = parameters["p_cold_ice_interior_dist"]
+            p_cold_ice_smoothness = parameters.get("p_cold_ice_smoothness", 0)
 
             cold_ice_mask = RasterLayer.cold_ice_mask(
                 ice_margin=margin.to_crs(grid_crs),
